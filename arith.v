@@ -93,9 +93,11 @@ Inductive red_expr_star : expr -> Z -> Prop :=
 
 
 Inductive asm : Type :=
-| APush : Z -> asm
-| AAdd : asm
-| ASub : asm.
+| APush : Z -> asm (* coloca n no topo *)
+| AAdd : asm (* tira os 2 n , soma e coloca na stack *)
+| ASub : asm. (* tira os 2 n, subtrai e coloca na stack *)
+
+(*last in first out*)
 
 Definition stack : Type := list Z.
 
@@ -103,13 +105,37 @@ Inductive outcome : Type :=
 | ORes : stack -> outcome
 | OAbort : outcome.
 
-Definition red_asm (stack: stack) (a: asm) : outcome := OAbort.
+
+Definition red_asm (stack: stack) (a: asm) : outcome := 
+match a with
+  | APush n => ORes (n :: stack)
+  | AAdd =>
+    match stack with  
+    | n1 :: n2 :: s => ORes ((n2 + n1) % Z :: s)
+    | _ => OAbort
+    end
+  | ASub =>
+    match stack with
+    | n1 :: n2 :: s => ORes ((n2 - n1) % Z :: s)
+    | _ => OAbort
+    end
+  end.
+
 
 
 Definition code : Type := list asm.
 
-Fixpoint red_asm_star (s: stack) (c: code) : outcome := OAbort.
-(* FILL HERE, exercise 4 *)
+Fixpoint red_asm_star (s: stack) (c: code) : outcome :=  (* c => list of machine instructions *)
+ match c with 
+| [] => ORes s
+| (a :: c') =>
+  match red_asm s a with 
+  | OAbort => OAbort
+  | ORes s' => red_asm_star s' c'
+  end
+end.
+
+
 
 Definition compile_op (o: op) : asm :=
   match o with
@@ -149,7 +175,7 @@ Proof.
 Admitted. (* FILL HERE, exercise 9 *)
 
 Lemma compile_correct : forall (e: expr) (n: Z),
-    red_expr_star e n -> (*wjdiuwedh*)
+    red_expr_star e n -> 
     red_asm_star [] (compile e) = ORes [n].
 Proof.
 Admitted. (* FILL HERE, exercise 10 *)
