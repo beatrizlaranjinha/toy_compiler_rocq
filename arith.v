@@ -149,10 +149,23 @@ Fixpoint compile (e: expr) : code :=  (* code é uma lista de instruções *)
   | EBinOp e1 o e2 => compile e1 ++ compile e2 ++ [ compile_op o]
   end.
 
+  (* Se a constante n reduz, em zero ou mais passos, para m, então n = m *)
 Lemma red_expr_star_const_inv : forall n m: Z,
     red_expr_star (EConst n) m -> n = m.
-Proof.
-Admitted. (* FILL HERE, exercise 6 *)
+    intros n m.
+    intros h.
+    destruct h.
+    - reflexivity.
+    - inversion H.
+Qed.
+
+
+
+
+    
+
+
+
 
 (* A [Parameter] definition in Rocq works like an axiom: some result
    that you can use without proving it. *)
