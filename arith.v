@@ -143,8 +143,11 @@ Definition compile_op (o: op) : asm :=
   | OSub => ASub
   end.
 
-Fixpoint compile (e: expr) : code := [].
-(* FILL HERE, exercise 5 *)
+Fixpoint compile (e: expr) : code :=  (* code é uma lista de instruções *)
+  match e with
+  | EConst n => [APush n]
+  | EBinOp e1 o e2 => compile e1 ++ compile e2 ++ [ compile_op o]
+  end.
 
 Lemma red_expr_star_const_inv : forall n m: Z,
     red_expr_star (EConst n) m -> n = m.
