@@ -187,7 +187,7 @@ induction c1. (*colocar primeiro as variaveis que não mudam*)
   + apply IHc1. 
     simpl in h.
     rewrite IHred in h.
-    assumption.
+    assumption. (*igual a hipotese h*)
   + simpl in h. 
     rewrite IHred in h.
     discriminate h.
@@ -196,8 +196,17 @@ Qed.
 Lemma compile_correct_gen : forall (e: expr) (n: Z) (s: stack),
     red_expr_star e n ->
     red_asm_star s (compile e) = ORes (n :: s).
-Proof.
-Admitted. (* FILL HERE, exercise 9 *)
+Proof. (*procurar lemma para não fazer indução em todos os casos*)
+  intros e.
+  induction e.
+  (* case 1: e = Econst *)
+  - intros n s h. simpl. apply red_expr_star_const_inv in h. rewrite h. reflexivity.
+  (* case 2: EBinOp e1 o e2 *)
+  - intros n s h. simpl. apply red_expr_star_middle in h. 
+  destruct h as [n1 [n2 [h1 [h2 hn]]]].
+  apply (IHe1 n1 s) in h1. 
+  apply (IHe2 n2 s) in h2.
+  
 
 Lemma compile_correct : forall (e: expr) (n: Z),
     red_expr_star e n -> 
