@@ -154,16 +154,10 @@ Lemma red_expr_star_const_inv : forall n m: Z,
     red_expr_star (EConst n) m -> n = m.
     intros n m.
     intros h.
-    destruct h.
+    inversion h.
     - reflexivity.
     - inversion H.
-Qed.
-
-
-
-
-    
-
+Qed. (*duvida*)
 
 
 
@@ -176,13 +170,28 @@ Parameter red_expr_star_middle : forall e1 e2 n op,
 
 Lemma red_asm_compile_op : forall (o: op) (n1 n2: Z) (s: stack),
     red_asm (n2 :: n1 :: s) (compile_op o) = ORes (eval_op n1 o n2 :: s).
-Admitted. (* FILL HERE, exercise 7 *)
+    intros o n1 n2 s.
+    induction o.
+    -auto. (*unfold red_asm. reflexivity.*)
+    -auto.
+Qed.
+
 
 Lemma comm_red_asm_append : forall (c1 c2: code) (s0 s1: stack),
     red_asm_star s0 c1 = ORes s1 ->
     red_asm_star s0 (c1 ++ c2) = red_asm_star s1 c2.
-Proof.
-Admitted. (* FILL HERE, exercise 8 *)
+intros c1 c2.
+induction c1. (*colocar primeiro as variaveis que não mudam*)
+- intros s0 s1 h. simpl. inversion h. reflexivity.
+- intros s0 s1 h. simpl. destruct (red_asm s0 a) eqn:IHred. (*pode dar ORes s' ou OAbort*)
+  + apply IHc1. 
+    simpl in h.
+    rewrite IHred in h.
+    assumption.
+  + simpl in h. 
+    rewrite IHred in h.
+    discriminate h.
+Qed.
 
 Lemma compile_correct_gen : forall (e: expr) (n: Z) (s: stack),
     red_expr_star e n ->
