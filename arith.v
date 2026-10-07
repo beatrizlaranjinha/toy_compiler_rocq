@@ -193,6 +193,8 @@ induction c1. (*colocar primeiro as variaveis que não mudam*)
     discriminate h.
 Qed.
 
+
+(* exericio 9 *)
 Lemma compile_correct_gen : forall (e: expr) (n: Z) (s: stack),
     red_expr_star e n ->
     red_asm_star s (compile e) = ORes (n :: s).
@@ -203,10 +205,13 @@ Proof. (*procurar lemma para não fazer indução em todos os casos*)
   - intros n s h. simpl. apply red_expr_star_const_inv in h. rewrite h. reflexivity.
   (* case 2: EBinOp e1 o e2 *)
   - intros n s h. simpl. apply red_expr_star_middle in h. 
-  destruct h as [n1 [n2 [h1 [h2 hn]]]].
-  apply (IHe1 n1 s) in h1. 
-  apply (IHe2 n2 s) in h2.
-  
+    destruct h as [n1 [n2 [h1 [h2 hn]]]].
+    apply (IHe1 n1 s) in h1. 
+    apply (IHe2 n2 (n1 :: s)) in h2. (* aplicar n2 a stack já existente *) 
+    rewrite (comm_red_asm_append (compile e1) (compile e2 ++ [compile_op o]) s (n1 :: s) h1).
+    rewrite (comm_red_asm_append (compile e2) [compile_op o] (n1 :: s) (n2 :: n1 :: s) h2).
+    simpl. rewrite red_asm_compile_op. rewrite hn. reflexivity.
+Qed.
 
 Lemma compile_correct : forall (e: expr) (n: Z),
     red_expr_star e n -> 
