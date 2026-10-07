@@ -213,8 +213,9 @@ Proof. (*procurar lemma para não fazer indução em todos os casos*)
     simpl. rewrite red_asm_compile_op. rewrite hn. reflexivity.
 Qed.
 
+
+(* https://softwarefoundations.cis.upenn.edu/lf-current/Imp.html *) (* Exercise: 3 stars, standard (stack_compiler_correct) *)
 Lemma compile_correct : forall (e: expr) (n: Z),
     red_expr_star e n -> 
     red_asm_star [] (compile e) = ORes [n].
-Proof.
-Admitted. (* FILL HERE, exercise 10 *)
+Proof. (*  *)
