@@ -208,10 +208,11 @@ Proof. (*procurar lemma para não fazer indução em todos os casos*)
     destruct h as (n1 & n2 & h1 & h2 & hn). (*->*)
     apply (IHe1 n1 s) in h1. 
     apply (IHe2 n2 (n1 :: s)) in h2. (* aplicar n2 a stack já existente *) 
-    rewrite (comm_red_asm_append (compile e1) (compile e2 ++ [compile_op o]) s (n1 :: s) h1).
-    rewrite (comm_red_asm_append (compile e2) [compile_op o] (n1 :: s) (n2 :: n1 :: s) h2).
+    rewrite (comm_red_asm_append _ _ _ (n1 :: s) h1).  (*compile e1 sobre a stack inicial s, o resultado é: n1 :: s*)
+    rewrite (comm_red_asm_append _ _ (n1 :: s) (n2 :: n1 :: s) h2).
     simpl. rewrite red_asm_compile_op. rewrite hn. reflexivity.
 Qed.
+
 
 
 (* https://softwarefoundations.cis.upenn.edu/lf-current/Imp.html *) (* try Exercise: 3 stars, standard (stack_compiler_correct) *)
