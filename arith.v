@@ -205,7 +205,7 @@ Proof. (*procurar lemma para não fazer indução em todos os casos*)
   - intros n s h. simpl. apply red_expr_star_const_inv in h. rewrite h. reflexivity.
   (* case 2: EBinOp e1 o e2 *)
   - intros n s h. simpl. apply red_expr_star_middle in h. 
-    destruct h as [n1 [n2 [h1 [h2 hn]]]].
+    destruct h as (n1 & n2 & h1 & h2 & hn). (*->*)
     apply (IHe1 n1 s) in h1. 
     apply (IHe2 n2 (n1 :: s)) in h2. (* aplicar n2 a stack já existente *) 
     rewrite (comm_red_asm_append (compile e1) (compile e2 ++ [compile_op o]) s (n1 :: s) h1).
@@ -214,8 +214,12 @@ Proof. (*procurar lemma para não fazer indução em todos os casos*)
 Qed.
 
 
-(* https://softwarefoundations.cis.upenn.edu/lf-current/Imp.html *) (* Exercise: 3 stars, standard (stack_compiler_correct) *)
+(* https://softwarefoundations.cis.upenn.edu/lf-current/Imp.html *) (* try Exercise: 3 stars, standard (stack_compiler_correct) *)
 Lemma compile_correct : forall (e: expr) (n: Z),
     red_expr_star e n -> 
-    red_asm_star [] (compile e) = ORes [n].
-Proof. (*  *)
+    red_asm_star [] (compile e) = ORes [n]. (* queremos começar com a stack vazia *)
+Proof.
+  intros e n h.
+  apply (compile_correct_gen e n []) in h.
+  assumption.
+Qed.
