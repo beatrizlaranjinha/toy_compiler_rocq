@@ -177,20 +177,26 @@ Lemma red_asm_compile_op : forall (o: op) (n1 n2: Z) (s: stack),
 Qed.
 
 
+
+(* exericio 8*)
 Lemma comm_red_asm_append : forall (c1 c2: code) (s0 s1: stack),
     red_asm_star s0 c1 = ORes s1 ->
     red_asm_star s0 (c1 ++ c2) = red_asm_star s1 c2.
 intros c1 c2.
 induction c1. (*colocar primeiro as variaveis que não mudam*)
+(* case 1: c1 = [] *)
 - intros s0 s1 h. simpl. inversion h. reflexivity.
+(* case 2: a :: c1 *)
 - intros s0 s1 h. simpl. destruct (red_asm s0 a) eqn:IHred. (*pode dar ORes s' ou OAbort*)
+  (* case 3: red_asm s0 a = ORes s *)
   + apply IHc1. 
     simpl in h.
     rewrite IHred in h.
     assumption. (*igual a hipotese h*)
+  (* case 4 : red_asm s0 a = OAbort *)
   + simpl in h. 
-    rewrite IHred in h.
-    discriminate h.
+    rewrite IHred in h. (* h : OAbort = ORes s1 , this is impossible so lets use discriminate *)
+    discriminate h. 
 Qed.
 
 
