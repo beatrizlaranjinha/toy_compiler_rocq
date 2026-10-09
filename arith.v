@@ -136,7 +136,6 @@ Fixpoint red_asm_star (s: stack) (c: code) : outcome :=  (* c => list of machine
 end.
 
 
-
 Definition compile_op (o: op) : asm :=
   match o with
   | OAdd => AAdd
@@ -155,9 +154,11 @@ Lemma red_expr_star_const_inv : forall n m: Z,
     intros n m.
     intros h.
     inversion h.
+    (* case 1: m = m *)
     - reflexivity.
+    (* case 2: n = m *)
     - inversion H.
-Qed. (*duvida*)
+Qed. 
 
 
 
@@ -168,11 +169,14 @@ Parameter red_expr_star_middle : forall e1 e2 n op,
     exists n1 n2, red_expr_star e1 n1 /\ red_expr_star e2 n2 /\
              n = eval_op n1 op n2.
 
+
 Lemma red_asm_compile_op : forall (o: op) (n1 n2: Z) (s: stack),
     red_asm (n2 :: n1 :: s) (compile_op o) = ORes (eval_op n1 o n2 :: s).
     intros o n1 n2 s.
     induction o.
+    (* case 1: OAdd *)
     -auto. (*unfold red_asm. reflexivity.*)
+    (* cade 2: OSub *)
     -auto.
 Qed.
 
@@ -221,7 +225,7 @@ Qed.
 
 
 
-(* https://softwarefoundations.cis.upenn.edu/lf-current/Imp.html *) (* try Exercise: 3 stars, standard (stack_compiler_correct) *)
+
 Lemma compile_correct : forall (e: expr) (n: Z),
     red_expr_star e n -> 
     red_asm_star [] (compile e) = ORes [n]. (* queremos começar com a stack vazia *)
