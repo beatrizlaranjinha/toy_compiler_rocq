@@ -16,7 +16,7 @@ Inductive expr : Type :=
 | EConst: Z -> expr (* represents an integer as an expression. *)
 | EBinOp : expr -> op -> expr -> expr. (* two expressions using an operator. *)
 
-(* Eealuates an arithmetic operation on two integers. *)
+(* evaluates an arithmetic operation on two integers. *)
 Definition eval_op (n1: Z) (o: op) (n2: Z): Z :=
   match o with
   | OAdd => n1 + n2
